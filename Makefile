@@ -8,17 +8,19 @@ BUILD_DIR   	:= build
 EXAMPLES_DIR	:= examples
 OBJ_DIR     	:= $(BUILD_DIR)/obj
 DEP_DIR     	:= $(BUILD_DIR)/dep
-SRC_DIRS    	:= collisions/src core/src dynamics/src shapes/src world/src
-INC_DIRS    	:= collisions/inc core/inc dynamics/inc shapes/inc world/inc
+SRC_DIRS    	:= collisions/src core/src dynamics/src shapes/src world/src render/src
+INC_DIRS    	:= collisions/inc core/inc dynamics/inc shapes/inc world/inc render/inc -I$(VULKAN_SDK)/include
 
 example 		?= basic_render
 MAIN_DIR     	:= $(EXAMPLES_DIR)/$(example)
 
 # Compiler and linker flags
-WARNINGS     	:= -Wall -Wextra -Werror
-COMMON_FLAGS 	:= $(WARNINGS) -nostdlib -nostartfiles -ffreestanding -mgeneral-regs-only -msse
+WARNINGS     	:= -Wall -Wextra -Werror -fpermissive
+COMMON_FLAGS 	:= $(WARNINGS) -mgeneral-regs-only -msse -fPIC -DGLFW_INCLUDE_VULKAN
 C_FLAGS      	:= $(COMMON_FLAGS) $(addprefix -I,$(INC_DIRS))
 CPP_FLAGS    	:= $(COMMON_FLAGS) $(addprefix -I,$(INC_DIRS))
+
+LD_FLAGS 		:= -L$(VULKAN_SDK)/lib -lm -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 
 
 # Find all source files
@@ -47,7 +49,7 @@ $(OBJ_DIR)/%_cc.o: %.cc
 
 $(BUILD_DIR)/$(PROJECT_NAME): $(ALL_OBJS)
 	@echo "Building Physics Engine..."
-	@$(CPP) $(ALL_OBJS) -o $(BUILD_DIR)/$(PROJECT_NAME)
+	@$(CPP) $(ALL_OBJS) -o $(BUILD_DIR)/$(PROJECT_NAME) $(LD_FLAGS)
 	@echo "Building Physics Engine complete"
 	@echo ""
 

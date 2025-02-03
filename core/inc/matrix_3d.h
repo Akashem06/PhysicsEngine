@@ -55,9 +55,32 @@ class Matrix3D {
     return Vector3D(x, y, z);
   }
 
+  template <typename T>
+  Matrix3D operator*(const T &scale) const {
+    Matrix3D result;
+    for (unsigned int i = 0; i < ROWS; i++) {
+      for (unsigned int j = 0; j < COLS; j++) {
+        result.matrix[i][j] = matrix[i][j] * scale;
+      }
+    }
+    return result;
+  }
+
+  Matrix3D operator+(const Matrix3D &other) const {
+    Matrix3D result;
+    for (unsigned int i = 0; i < ROWS; i++) {
+      for (unsigned int j = 0; j < COLS; j++) {
+        result.matrix[i][j] = matrix[i][j] + other.matrix[i][j];
+      }
+    }
+    return result;
+  }
+
   Matrix3D transpose() const;
   float determinant() const;
   Matrix3D inverse() const;
+  bool isOrthonormal(float tolerance = 1e-4) const;
+  void orthonormalize();
 };
 
 /** @} */

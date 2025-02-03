@@ -30,7 +30,7 @@ constexpr float RAD_TO_DEG = 180.0f / PI;
 constexpr float EPSILON = 1e-6f;
 
 float clamp(float value, float min, float max);
-float lerp(float a, float b, float t);
+float lerp(float startValue, float endValue, float t);
 float smoothStep(float edge0, float edge1, float x);
 
 float distance(const Vector3D &a, const Vector3D &b);

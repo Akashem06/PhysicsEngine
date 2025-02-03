@@ -89,3 +89,57 @@ Matrix3D Matrix3D::inverse() const {
 
   return result;
 }
+
+void Matrix3D::orthonormalize() {
+  /* Gram-Schmidt orthogonalization process */
+
+  Vector3D xAxis(matrix[0][0], matrix[1][0], matrix[2][0]);
+  Vector3D yAxis(matrix[0][1], matrix[1][1], matrix[2][1]);
+  Vector3D zAxis(matrix[0][2], matrix[1][2], matrix[2][2]);
+
+  /* Normalize the X axis */
+  xAxis = xAxis.normalize();
+
+  /* Make Y axis orthogonal to X axis */
+  yAxis = yAxis - xAxis * xAxis.dotProduct(yAxis);
+  yAxis = yAxis.normalize();
+
+  /* Make Z axis orthogonal to X axis and Y axis */
+  zAxis = zAxis - (xAxis * xAxis.dotProduct(zAxis)) - (yAxis * yAxis.dotProduct(zAxis));
+  zAxis = zAxis.normalize();
+
+  /* Rebuild matrix */
+  matrix[0][0] = xAxis.x;
+  matrix[0][1] = yAxis.x;
+  matrix[0][2] = zAxis.x;
+  matrix[1][0] = xAxis.y;
+  matrix[1][1] = yAxis.y;
+  matrix[1][2] = zAxis.y;
+  matrix[2][0] = xAxis.z;
+  matrix[2][1] = yAxis.z;
+  matrix[2][2] = zAxis.z;
+}
+
+bool Matrix3D::isOrthonormal(float tolerance) const {
+  Vector3D xAxis(matrix[0][0], matrix[1][0], matrix[2][0]);
+  Vector3D yAxis(matrix[0][1], matrix[1][1], matrix[2][1]);
+  Vector3D zAxis(matrix[0][2], matrix[1][2], matrix[2][2]);
+
+  /* Check if axes are normalized (length ≈ 1) */
+  if (std::abs(xAxis.lengthSquared() - 1.0f) > tolerance)
+    return false;
+  if (std::abs(yAxis.lengthSquared() - 1.0f) > tolerance)
+    return false;
+  if (std::abs(zAxis.lengthSquared() - 1.0f) > tolerance)
+    return false;
+
+  /* Check if axes are perpendicular (dot product ≈ 0) */
+  if (std::abs(xAxis.dotProduct(yAxis)) > tolerance)
+    return false;
+  if (std::abs(yAxis.dotProduct(zAxis)) > tolerance)
+    return false;
+  if (std::abs(zAxis.dotProduct(xAxis)) > tolerance)
+    return false;
+
+  return true;
+}
